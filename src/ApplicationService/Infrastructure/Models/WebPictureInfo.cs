@@ -9,6 +9,6 @@ namespace Infrastructure.Models
 {
     public class WebPictureInfo
     {
-
+        public int Id { get; set; }
     }
 }
