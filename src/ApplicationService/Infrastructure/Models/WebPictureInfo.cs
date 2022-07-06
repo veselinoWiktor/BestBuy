@@ -7,5 +7,8 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Models
 {
-   
+    public class WebPictureInfo
+    {
+
+    }
 }
