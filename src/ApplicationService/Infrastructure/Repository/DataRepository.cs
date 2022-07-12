@@ -22,16 +22,16 @@ namespace Infrastructure.Repository
         {
             this.storageData = storage;
         }
-        public async Task AddAsync(WebPictureInfo entity)
+        public async Task<int> AddAsync(WebPictureInfo entity)
         {
-            await this.SaveEntityAsync(entity);
+            return await this.SaveEntityAsync(entity);
         }
-        public async Task AddRangeAsync(List<WebPictureInfo> entities)
+        public async Task<int> AddRangeAsync(List<WebPictureInfo> entities)
         {
-            await this.SaveRangeAsync(entities);
+            return await this.SaveRangeAsync(entities);
         }
 
-        public async Task<WebPictureInfo> GetByIdAsync(int id)
+        public async Task<WebPictureInfo> GetByIdAsync(int id)//May have a problem!
         {
             using (SqlConnection sql = new SqlConnection())
             {
@@ -106,28 +106,26 @@ namespace Infrastructure.Repository
             return entities;
         }
 
-
-
-
         public async Task<List<WebPictureInfo>> GetTop10()
         {
             List<WebPictureInfo> models = new List<WebPictureInfo>();
 
-            using (SqlConnection sql = new SqlConnection(storageData.ConnectionString))
+            using (SqlConnection sql = new SqlConnection(this.storageData.ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(SqlCommands.Select_Top_10, sql))
                 {
                     await sql.OpenAsync();
-
-                    while (data.Read())
+                    using (var data = await cmd.ExecuteReaderAsync())
                     {
-                        models.Add(new WebPictureInfo()
+                        while (await data.ReadAsync())
                         {
-                            Brand = data[0].ToString(),
-                            Rating = int.Parse(data[1].ToString())
-                        });
+                            models.Add(new WebPictureInfo()
+                            {
+                                Brand = data[0].ToString(),
+                                Rating = int.Parse(data[1].ToString())
+                            });
+                        }
                     }
-                    await sql.CloseAsync();
                 }
             }
             return models;
@@ -203,6 +201,40 @@ namespace Infrastructure.Repository
 
                 }
             }
+        }
+
+        public async Task<Dictionary<string, List<Picture>>> ListBrandsAsync()
+        {
+            Dictionary<string, List<Picture>> dictionary = new Dictionary<string, List<Picture>>();
+
+            using (SqlConnection sql = new SqlConnection(this.storageData.ConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(SqlCommands.Select_WebPictures, sql))
+                {
+                    await sql.OpenAsync();
+                    using (var data = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await data.ReadAsync())
+                        {
+                            string Brand = data[0].ToString();
+
+                            Picture picture = new Picture()
+                            {
+                                Url = data[1].ToString(),
+                                Rate = int.Parse(data[2].ToString())
+                            };
+
+                            if (!dictionary.ContainsKey(Brand))
+                            {
+                                dictionary.Add(Brand, new List<Picture>());
+                            }
+                            dictionary[Brand].Add(picture);
+                        }
+                    }
+                }
+            }
+
+            return dictionary;
         }
     }
 }

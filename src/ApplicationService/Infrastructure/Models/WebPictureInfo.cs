@@ -7,8 +7,12 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Models
 {
-    public class WebPictureInfo
+    public class WebPictureInfo : BaseModel
     {
+        public string Brand { get; set; }
 
+        public string Url { get; set; }
+
+        public int Rating { get; set; }
     }
 }

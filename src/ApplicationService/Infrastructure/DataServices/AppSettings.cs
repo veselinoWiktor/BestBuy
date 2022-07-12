@@ -24,7 +24,7 @@ namespace Infrastructure.DataServices
             }
             set
             {
-                if (value<1)
+                if (value>1)
                 {
                     _startFrom = value;
                 }
@@ -43,16 +43,10 @@ namespace Infrastructure.DataServices
             set
             {
                 
-                if (value>1 && _startFrom == 1)
-                {
-                    _startFrom = value;
-                    _to = value;
-                }
-                else if (value > 1 && _startFrom!=1)
+                if (value>1 && value>_startFrom)
                 {
                     _to = value;
                 }
-
             }
         }
        // public ServerSettings ServerSettings { get; set; } = new ServerSettings();

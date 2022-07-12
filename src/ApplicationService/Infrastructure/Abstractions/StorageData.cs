@@ -40,10 +40,10 @@ namespace Infrastructure.Abstractions
             var acc = Settings.Account == null ? "SSPI" : Settings.Account;
             return string.Format($"Server={Settings.ServerName};Database={Settings.Database};Integrated Security={acc};");
         }
-      
+
         private async Task InitializeDatabaseAsync()
         {
-            using (SqlConnection sql = new SqlConnection("Server=.;Integrated Security=SSPI;database=master;"))
+            using (SqlConnection sql = new SqlConnection($"Server={Settings.ServerName};Database=master;Integrated Security=SSPI;"))
             {
                 using (SqlCommand cmd = new SqlCommand(cmdDatabase, sql))
                 {
@@ -53,10 +53,18 @@ namespace Infrastructure.Abstractions
                     cmd.Parameters.Add("@database", System.Data.SqlDbType.NVarChar).Value = database;
                     sql.Open();
 
-                    if (Convert.ToInt32(cmd.ExecuteScalar()) == 0)
+                    try
                     {
-                        await CreateDatabase(database);
-                        await CreateTablesAsync();
+                        if (Convert.ToInt32(cmd.ExecuteScalar()) == 0)
+                        {
+                            await CreateDatabase(database);
+                            await CreateTablesAsync();
+                        }
+                    }
+                    catch (Exception)
+                    {
+
+                        throw;
                     }
                 }
             }
@@ -65,23 +73,26 @@ namespace Infrastructure.Abstractions
         private async Task CreateDatabase(string database)
         {
 
-            using (SqlConnection myConn = new SqlConnection("Server=.;Integrated Security=SSPI;database=master;"))
+            using (SqlConnection myConn = new SqlConnection($"Server={Settings.ServerName};Database=master;Integrated Security=SSPI;"))
             {
-                string str = $"CREATE DATABASE {database} ON PRIMARY " +
-                             $"(NAME = {database}, " +
-                             $"FILENAME = 'C:\\{database}.mdf', " +
-                             "SIZE = 2MB, MAXSIZE = 10MB, FILEGROWTH = 10%)" +
-                             $"LOG ON (NAME = {database}_Log, " +
-                             $"FILENAME = 'C:\\{database}.ldf', " +
-                             "SIZE = 1MB, " +
-                             "MAXSIZE = 5MB, " +
-                             "FILEGROWTH = 10%)";
+                //string str = $"CREATE DATABASE {database} ON PRIMARY " +
+                //             $"(NAME = {database}, " +
+                //             $"FILENAME = 'C:\\{database}.mdf', " +
+                //             "SIZE = 2MB, MAXSIZE = 10MB, FILEGROWTH = 10%)" +
+                //             $"LOG ON (NAME = {database}_Log, " +
+                //             $"FILENAME = 'C:\\{database}.ldf', " +
+                //             "SIZE = 1MB, " +
+                //             "MAXSIZE = 5MB, " +
+                //             "FILEGROWTH = 10%)";
+
+                string str = $"CREATE DATABASE {database}";
 
                 SqlCommand myCommand = new SqlCommand(str, myConn);
                 try
                 {
                     myConn.Open();
-                    await myCommand.ExecuteNonQueryAsync();
+                    //await myCommand.ExecuteNonQueryAsync();
+                    myCommand.ExecuteNonQuery();
 
                 }
                 catch (System.Exception ex)
@@ -108,8 +119,10 @@ namespace Infrastructure.Abstractions
             try
             {
                 conn.Open();
-                await cmd.ExecuteNonQueryAsync();
-                await procedureCmd.ExecuteNonQueryAsync();
+                //await cmd.ExecuteNonQueryAsync();
+                //await procedureCmd.ExecuteNonQueryAsync();
+                cmd.ExecuteNonQuery();
+                procedureCmd.ExecuteNonQuery();
             }
             catch (System.Exception ex)
             {
@@ -121,8 +134,8 @@ namespace Infrastructure.Abstractions
                     conn.Close();
             }
         }
-   
 
-       
+
+
     }
 }
