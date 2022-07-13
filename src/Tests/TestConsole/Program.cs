@@ -25,9 +25,9 @@ webReader.AppSettings.Setup(x =>
 UowService uowService = new UowService(webReader.AppSettings.DataProvider);
 
 //var result = await webReader.ReadUrlData();
-
 //var addRangeResponse = await uowService.DataRepository.AddRangeAsync(result);
 //Console.WriteLine(addRangeResponse);
+
 //var res = await uowService.DataRepository.ListBrandsAsync();
 //foreach (var item in res)
 //{
