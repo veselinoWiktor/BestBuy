@@ -20,7 +20,7 @@ webReader.AppSettings.Setup(x =>
     x.DataProvider = new StorageService(storageSettings);
     
     x.StartFrom = 2416488;
-    x.To = 2417488;
+    x.To = 2416588;
 });
 UowService uowService = new UowService(webReader.AppSettings.DataProvider);
 
