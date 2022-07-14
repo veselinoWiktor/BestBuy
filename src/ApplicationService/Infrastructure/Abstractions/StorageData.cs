@@ -53,19 +53,12 @@ namespace Infrastructure.Abstractions
                     cmd.Parameters.Add("@database", System.Data.SqlDbType.NVarChar).Value = database;
                     sql.Open();
 
-                    try
+                    if (Convert.ToInt32(cmd.ExecuteScalar()) == 0)
                     {
-                        if (Convert.ToInt32(cmd.ExecuteScalar()) == 0)
-                        {
-                            await CreateDatabase(database);
-                            await CreateTablesAsync();
-                        }
+                        await CreateDatabase(database);
+                        await CreateTablesAsync();
                     }
-                    catch (Exception)
-                    {
 
-                        throw;
-                    }
                 }
             }
         }

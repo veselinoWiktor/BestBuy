@@ -31,17 +31,27 @@ namespace Infrastructure.Repository
             return await this.SaveRangeAsync(entities);
         }
 
-        public async Task<WebPictureInfo> GetByIdAsync(int id)//May have a problem!
+        public async Task<WebPictureInfo> GetByIdAsync(int id)
         {
-            using (SqlConnection sql = new SqlConnection())
+            using (SqlConnection sql = new SqlConnection(this.storageData.ConnectionString))
             {
-                using (SqlCommand cmd = new SqlCommand())
+                using (SqlCommand cmd = new SqlCommand(SqlCommands.Select_ById, sql))
                 {
+                    cmd.Parameters.Add(new SqlParameter("@id", id));
                     await sql.OpenAsync();
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
                         WebPictureInfo webPictureInfo = null;
-
+                        while (await reader.ReadAsync())
+                        {
+                            webPictureInfo = new WebPictureInfo()
+                            {
+                                Id = int.Parse(reader[0].ToString()),
+                                Brand = reader[1].ToString(),
+                                Url = reader[3].ToString(),
+                                Rating = int.Parse(reader[4].ToString())
+                            };
+                        }
                         return webPictureInfo;
                     }
                 }

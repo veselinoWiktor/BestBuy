@@ -20,21 +20,22 @@ webReader.AppSettings.Setup(x =>
     x.DataProvider = new StorageService(storageSettings);
     
     x.StartFrom = 2416488;
-    x.To = 2417488;
+    x.To = 2416618;
 });
 UowService uowService = new UowService(webReader.AppSettings.DataProvider);
 
+//Importing new data
 //var result = await webReader.ReadUrlData();
-//var addRangeResponse = await uowService.DataRepository.AddRangeAsync(result);
-//Console.WriteLine(addRangeResponse);
+//await uowService.DataRepository.AddRangeAsync(result);
 
-//var res = await uowService.DataRepository.ListBrandsAsync();
-//foreach (var item in res)
-//{
-//    Console.WriteLine(item.Key);
-//    foreach (var p in item.Value)
-//    {
-//        Console.WriteLine($"{p.Rate} {p.Url}");
-//    }
-//}
+//Displaying the records
+var res = await uowService.DataRepository.ListBrandsAsync();
+foreach (var item in res)
+{
+    Console.WriteLine(item.Key);
+    foreach (var p in item.Value)
+    {
+        Console.WriteLine($"{p.Rate} {p.Url}");
+    }
+}
 

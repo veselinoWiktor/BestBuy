@@ -13,7 +13,7 @@ namespace Infrastructure.Constants
         public const string Select_Top_10 = "select top 10 b.BrandName, SUM(p.Rate) as Rate from Brands as b join Pictures as p on p.BrandId = b.Id group by b.BrandName order by Rate desc--";
         public const string Select_WebPictures = " select BrandName, Url, Rate from Brands as b join Pictures as p on p.BrandId = b.Id";
        // public const string Select_WebPictures = "SELECT b.BrandName, pr.Rate, pr.Url FROM Brands b join(SELECT p.Url, p.BrandId, p.Rate FROM Pictures as p) as pr on b.Id =pr.BrandId order by b.BrandName";
-        public const string Select_ById = "select * from Brands as b join Pictures as p on p.BrandId = b.Id where b.Id={0}";
+        public const string Select_ById = "select * from Brands as b join Pictures as p on p.BrandId = b.Id where b.Id=@id";
         public const string Select_ByName = "select * from Brands as b join Pictures as p on p.BrandId = b.Id where b.BrandName LIKE @name";
     }
 }
