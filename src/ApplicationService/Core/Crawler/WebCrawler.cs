@@ -25,30 +25,33 @@ namespace Core.Crawler
         public async Task<WebPictureInfo> GetPictureDataAsync(string data)
         {
 
+
             htmlDocument.LoadHtml(data);
 
-            bool hasCameraBrand = htmlDocument.DocumentNode.SelectNodes("//span[@class=\'exif-info-label\']")[0].InnerText == "brand";
 
-            if (!hasCameraBrand)
+            //TODO implement agility code           
+
+            string name = htmlDocument.DocumentNode
+                .SelectSingleNode("//span[@class='exif-info-label']")
+                .InnerText;
+            if (name != "brand")
             {
                 return null;
             }
 
-            var cameraBrandSelector = htmlDocument.DocumentNode.SelectNodes("//span[@class=\'exif-info-data\']")[0];
-            var ratingSelector = htmlDocument.DocumentNode.SelectSingleNode("//li[contains(@class, 'rating-type ratinga')]/span[contains(@class, 'counter')]/span");
+            string brandName = htmlDocument.DocumentNode
+                .SelectSingleNode("//span[@class='exif-info-data']")
+                .InnerText;
 
-            string cameraBrand = cameraBrandSelector.InnerText;
-            int ratingScore = int.Parse(ratingSelector.InnerText);
+            int rating = int.Parse(htmlDocument.DocumentNode
+                .SelectSingleNode("//li[contains(@class, 'rating-type ratinga')]/span[contains(@class, 'counter')]/span")
+                .InnerText);
 
-            WebPictureInfo model = new WebPictureInfo()
-            {
-                Brand = cameraBrand,
-                Url = this.CurrentUrl,
-                Rating = ratingScore
-            };
-            
+            WebPictureInfo model = new WebPictureInfo();
+            model.Brand = brandName;
+            model.Rating = rating;
+            model.Url = this.CurrentUrl;
             return model;
-           
         }
     }
 }
